@@ -4,12 +4,12 @@ namespace HyperMap
 {
 	public class HyperMap
 	{
-		public static MapBuilder<T> Configure<T>(string uriSegment)
+		public static MapBuilder<T> CreateResourceMap<T>(string uriSegment)
 		{
 			return new MapBuilder<T>(uriSegment);
 		}
 
-		public static MapBuilder<T> Configure<T>()
+		public static MapBuilder<T> CreateResourceMap<T>()
 		{
 			return new MapBuilder<T>();
 		}

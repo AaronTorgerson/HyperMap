@@ -32,26 +32,26 @@ namespace HyperMap
 			return this;
 		}
 
-		public MapBuilder<T> ChildResource<TMember>(Expression<Func<T, TMember>> sourceMember)
+		public MapBuilder<T> ResourceUriFor<TMember>(Expression<Func<T, TMember>> sourceMember)
 		{
 			var property = ((MemberExpression)sourceMember.Body).Member as PropertyInfo;
 			typeMap.AddChildResource(property);
 			return this;
 		}
 
-		public MapBuilder<TMember> Configure<TMember>(Expression<Func<T, TMember>> sourceMember)
+		public MapBuilder<TMember> ChildResource<TMember>(Expression<Func<T, TMember>> sourceMember)
 		{
 			var referringProperty = ((MemberExpression)sourceMember.Body).Member as PropertyInfo;
 			return new MapBuilder<TMember>(referringProperty);
 		}
 
-		public MapBuilder<TEnumerable> ConfigureCollection<TEnumerable>(Expression<Func<T, IEnumerable<TEnumerable>>> sourceMember)
+		public MapBuilder<TEnumerable> ChildResource<TEnumerable>(Expression<Func<T, IEnumerable<TEnumerable>>> sourceMember)
 		{
 			var referringProperty = ((MemberExpression)sourceMember.Body).Member as PropertyInfo;
 			return new MapBuilder<TEnumerable>(referringProperty);
 		}
 
-		public MapBuilder<TEnumerable> ConfigureCollection<TEnumerable>(Expression<Func<T, List<TEnumerable>>> sourceMember)
+		public MapBuilder<TEnumerable> ChildResource<TEnumerable>(Expression<Func<T, List<TEnumerable>>> sourceMember)
 		{
 			var referringProperty = ((MemberExpression)sourceMember.Body).Member as PropertyInfo;
 			return new MapBuilder<TEnumerable>(referringProperty);

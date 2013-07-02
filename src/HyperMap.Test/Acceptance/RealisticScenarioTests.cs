@@ -31,9 +31,9 @@ namespace HyperMap.Test.Acceptance
 		[Test]
 		public void PortfolioScenario1()
 		{
-			HyperMap.Configure<SampleTypes.Portfolio>()
+			HyperMap.CreateResourceMap<SampleTypes.Portfolio>()
 			        .Id(p => p.PortfolioId)
-			        .ChildResource(p => p.Positions);
+			        .ResourceUriFor(p => p.Positions);
 
 			var mapped = HyperMap.Map(Portfolio);
 
@@ -45,9 +45,9 @@ namespace HyperMap.Test.Acceptance
 		[Test]
 		public void PortfolioScenario2()
 		{
-			HyperMap.Configure<SampleTypes.Portfolio>()
+			HyperMap.CreateResourceMap<SampleTypes.Portfolio>()
 							.Id(p => p.PortfolioId)
-							.ConfigureCollection(p => p.Positions)
+							.ChildResource(p => p.Positions)
 							.Id(p => p.PositionId);
 
 			var mapped = HyperMap.Map(Portfolio);

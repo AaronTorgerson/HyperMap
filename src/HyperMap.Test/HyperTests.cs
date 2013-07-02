@@ -15,7 +15,7 @@ namespace HyperMap.Test
 		[Test]
 		public void MapWithIdUri()
 		{
-			HyperMap.Configure<SampleTypes.Thing>("sample")
+			HyperMap.CreateResourceMap<SampleTypes.Thing>("sample")
 			        .Id(c => c.Id);
 
 			var mapped = HyperMap.Map(new SampleTypes.Thing {Id = 2});
@@ -26,7 +26,7 @@ namespace HyperMap.Test
 		[Test]
 		public void IdFieldIsAssumedByName()
 		{
-			HyperMap.Configure<SampleTypes.Thing>();
+			HyperMap.CreateResourceMap<SampleTypes.Thing>();
 
 			var mapped = HyperMap.Map(new SampleTypes.Thing {Id = 2});
 
@@ -36,7 +36,7 @@ namespace HyperMap.Test
 		[Test]
 		public void UriSegmentCanBeDerivedFromType()
 		{
-			HyperMap.Configure<SampleTypes.Thing>()
+			HyperMap.CreateResourceMap<SampleTypes.Thing>()
 			        .Id(c => c.Id);
 
 			var mapped = HyperMap.Map(new SampleTypes.Thing {Id = 2});
@@ -47,7 +47,7 @@ namespace HyperMap.Test
 		[Test]
 		public void OtherPropertiesGetMappedNormally()
 		{
-			HyperMap.Configure<SampleTypes.Thing>()
+			HyperMap.CreateResourceMap<SampleTypes.Thing>()
 			        .Id(c => c.Id);
 
 			var mapped = HyperMap.Map(
@@ -63,9 +63,9 @@ namespace HyperMap.Test
 		[Test]
 		public void ReferenceChildPropertyAsResourceUri()
 		{
-			HyperMap.Configure<SampleTypes.Widget>()
-							.Id(t => t.Id)
-			        .ChildResource(t => t.Features);
+			HyperMap.CreateResourceMap<SampleTypes.Widget>()
+			        .Id(t => t.Id)
+			        .ResourceUriFor(t => t.Features);
 
 			var mapped = HyperMap.Map(new SampleTypes.Widget{Id = 3});
 
@@ -75,8 +75,8 @@ namespace HyperMap.Test
 		[Test]
 		public void ResourceMappingOfAMappedChildProperty()
 		{
-			HyperMap.Configure<SampleTypes.Feature>()
-							.Configure(t => t.Hoozit);
+			HyperMap.CreateResourceMap<SampleTypes.Feature>()
+			        .ChildResource(t => t.Hoozit);
 
 			var feature = new SampleTypes.Feature
 			{
@@ -105,8 +105,8 @@ namespace HyperMap.Test
 		[Test]
 		public void MappingOfChildCollecitonAsListWithHref()
 		{
-			HyperMap.Configure<SampleTypes.Widget>()
-			        .ConfigureCollection(w => w.Features);
+			HyperMap.CreateResourceMap<SampleTypes.Widget>()
+			        .ChildResource(w => w.Features);
 
 			var mapped = HyperMap.Map(widget);
 
@@ -118,8 +118,8 @@ namespace HyperMap.Test
 		[Test]
 		public void MappingOfChildCollecitonAsResourceUri()
 		{
-			HyperMap.Configure<SampleTypes.Widget>()
-					  .ChildResource(w => w.Features);
+			HyperMap.CreateResourceMap<SampleTypes.Widget>()
+					  .ResourceUriFor(w => w.Features);
 
 			var mapped = HyperMap.Map(widget);
 
