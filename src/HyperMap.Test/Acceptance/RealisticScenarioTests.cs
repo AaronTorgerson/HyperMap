@@ -54,12 +54,11 @@ namespace HyperMap.Test.Acceptance
 
 			Assert.That(mapped.PortfolioId, Is.EqualTo("/portfolio/123"));
 			Assert.That(mapped.Cash, Is.EqualTo(10000));
-			Assert.That(mapped.Positions, Has.Count.EqualTo(1));
-			Assert.That(mapped.Positions[0].PositionId, Is.EqualTo("/portfolio/123/positions/1"));
-			Assert.That(mapped.Positions[0].Ticker, Is.EqualTo("AAPL"));
-			Assert.That(mapped.Positions[0].Units, Is.EqualTo(50));
-			Assert.That(mapped.Positions[0].UnitPrice, Is.EqualTo(430));
-
+			Assert.That(mapped.Positions.Items, Has.Count.EqualTo(1));
+			Assert.That(mapped.Positions.Items[0].PositionId, Is.EqualTo("/portfolio/123/positions/1"));
+			Assert.That(mapped.Positions.Items[0].Ticker, Is.EqualTo("AAPL"));
+			Assert.That(mapped.Positions.Items[0].Units, Is.EqualTo(50));
+			Assert.That(mapped.Positions.Items[0].UnitPrice, Is.EqualTo(430));
 		}
 	}
 }

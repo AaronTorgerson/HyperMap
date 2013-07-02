@@ -89,16 +89,10 @@ namespace HyperMap.Test
 			Assert.That(mapped.Hoozit.Id, Is.EqualTo("/feature/10/hoozit/5"));
 		}
 
-		[Test]
-		public void MappingOfChildColleciton()
+		SampleTypes.Widget widget = new SampleTypes.Widget
 		{
-			HyperMap.Configure<SampleTypes.Widget>()
-			        .ConfigureCollection(w => w.Features);
-
-			var widget = new SampleTypes.Widget
-			{
-				Id = 123,
-				Features = new List<SampleTypes.Feature>
+			Id = 123,
+			Features = new List<SampleTypes.Feature>
 				{
 					new SampleTypes.Feature
 					{
@@ -106,17 +100,32 @@ namespace HyperMap.Test
 						Id = 555
 					}
 				}
-			};
+		};
+
+		[Test]
+		public void MappingOfChildCollecitonAsListWithHref()
+		{
+			HyperMap.Configure<SampleTypes.Widget>()
+			        .ConfigureCollection(w => w.Features);
 
 			var mapped = HyperMap.Map(widget);
 
-			Assert.That(mapped.Features, Has.Count.EqualTo(1));
-			Assert.That(mapped.Features[0].Id, Is.EqualTo("/widget/123/features/555"));
+			Assert.That(mapped.Features.Href, Is.EqualTo("/widget/123/features"));
+			Assert.That(mapped.Features.Items, Has.Count.EqualTo(1));
+			Assert.That(mapped.Features.Items[0].Id, Is.EqualTo("/widget/123/features/555"));
 		}
 
-		// ResourceMappingOfAMappedChildCollection
-		// If ChildResource is called, Id must have been specified.
+		[Test]
+		public void MappingOfChildCollecitonAsResourceUri()
+		{
+			HyperMap.Configure<SampleTypes.Widget>()
+					  .ChildResource(w => w.Features);
+
+			var mapped = HyperMap.Map(widget);
+
+			Assert.That(mapped.Features, Is.EqualTo("/widget/123/features"));
+		}
+
 		// If Map is called without having Configured that type.
-		// Attempt to map a type without 
 	}
 }

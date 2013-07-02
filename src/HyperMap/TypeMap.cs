@@ -71,7 +71,11 @@ namespace HyperMap
 					var memberMap = TypeMaps.For(enumerableType);
 					if (memberMap != null)
 					{
-						var list = new ArrayList();
+						var list = new ChildCollectionResource
+							{
+								Href = idUri + "/" + getter.Name.ToLower()
+							};
+
 						foreach (var item in (IEnumerable)getter.GetValue(toMap))
 						{
 							list.Add(memberMap.MapInstance(item, idUri));
@@ -105,6 +109,22 @@ namespace HyperMap
 		private string IdUri(object toMap, string parentIdUri)
 		{
 			return parentIdUri + "/" + UriSegment + "/" + idProperty.GetValue(toMap);
+		}
+
+		public class ChildCollectionResource
+		{
+			public ChildCollectionResource()
+			{
+				Items = new ArrayList();
+			}
+
+			public string Href { get; set; }
+			public ArrayList Items { get; set; }
+
+			public void Add(object item)
+			{
+				Items.Add(item);
+			}
 		}
 	}
 }
