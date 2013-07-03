@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>@AaronTorgerson</authors>
+    <owners>Aaron Torgerson</owners>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/AaronTorgerson/HyperMap</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Bare, basic functionality. Report issues at https://github.com/AaronTorgerson/HyperMap/issues. </releaseNotes>
+    <copyright>Copyright @AaronTorgerson 2013</copyright>
+    <tags>mapping REST hypermedia HATEOAS</tags>
+  </metadata>
+</package>

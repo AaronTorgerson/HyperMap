@@ -9,8 +9,9 @@ namespace HyperMap
 {
 	public class TypeMap
 	{
-		private readonly List<MemberInfo> overriddenProperties;
+		private readonly List<MemberInfo> propertiesToOmit;
 		private readonly PropertyInfo[] properties;
+		private readonly Dictionary<PropertyInfo, LinkTemplate> linkTemplates;
 		private PropertyInfo idProperty;
 
 		public Type Type { get; private set; }
@@ -20,9 +21,10 @@ namespace HyperMap
 		{
 			Type = type;
 			UriSegment = uriSegment;
-			overriddenProperties = new List<MemberInfo>();
+			propertiesToOmit = new List<MemberInfo>();
 			properties = Type.GetProperties();
 			AssumeIdBasedOnName();
+			linkTemplates = new Dictionary<PropertyInfo, LinkTemplate>();
 		}
 
 		private void AssumeIdBasedOnName()
@@ -33,98 +35,91 @@ namespace HyperMap
 			});
 		}
 
-		public bool IsChildResource(MemberInfo member)
-		{
-			return overriddenProperties.Contains(member);
-		}
-
 		public void SetId(PropertyInfo idProperty)
 		{
 			this.idProperty = idProperty;
 		}
 
-		public void AddChildResource(MemberInfo member)
+		public void AddLink(PropertyInfo member, string linkRelation)
 		{
-			overriddenProperties.Add(member);
+			linkTemplates.Add(member, new LinkTemplate(member.Name, linkRelation));
+			propertiesToOmit.Add(member);
 		}
 
 		public dynamic MapInstance(object toMap, string parentIdUri = "")
 		{
 			IDictionary<string, object> result = new ExpandoObject();
-			string idUri = IdUri(toMap, parentIdUri);
+			var links = new Links();
+			string idUri = GetIdUri(toMap, parentIdUri);
+			links.Add(new Link { Rel = "self", Href = idUri });
 
-			foreach (var getter in properties)
+			foreach (var property in properties)
 			{
-				Type propertyType = getter.PropertyType;
+				Type propertyType = property.PropertyType;
+				object propertyValue = property.GetValue(toMap);
 
-				if (IsChildResource(getter))
+				if (linkTemplates.ContainsKey(property))
 				{
-					result[getter.Name] = idUri + "/" + getter.Name.ToLower();
-				}
-				else if (getter == idProperty)
-				{
-					result[getter.Name] = idUri;
-				}
-				else if (propertyType.IsGenericType && (typeof(IEnumerable)).IsAssignableFrom(propertyType))
-				{
-					var enumerableType = propertyType.GetGenericArguments().First();
-					var memberMap = TypeMaps.For(enumerableType);
-					if (memberMap != null)
-					{
-						var list = new ChildCollectionResource
-							{
-								Href = idUri + "/" + getter.Name.ToLower()
-							};
-
-						foreach (var item in (IEnumerable)getter.GetValue(toMap))
-						{
-							list.Add(memberMap.MapInstance(item, idUri));
-						}
-						result[getter.Name] = list;
-					}
-					else
-					{
-						result[getter.Name] = getter.GetValue(toMap);
-					}
+					links.Add(linkTemplates[property].CreateLink(idUri));
 				}
 				else
 				{
-					TypeMap memberMap = TypeMaps.For(propertyType);
-					object memberValue = getter.GetValue(toMap);
-
-					if (memberMap != null)
-					{
-						result[getter.Name] = memberMap.MapInstance(memberValue, idUri);
-					}
-					else
-					{
-						result[getter.Name] = memberValue;
-					}
+					result[property.Name] = MapProperty(propertyType, propertyValue, idUri);
 				}
 			}
+
+			if (links.Any())
+				result["Links"] = links;
 
 			return result;
 		}
 
-		private string IdUri(object toMap, string parentIdUri)
+		private static object MapProperty(Type propertyType, object propertyValue, string idUri)
 		{
-			return parentIdUri + "/" + UriSegment + "/" + idProperty.GetValue(toMap);
+			return IsGenericListType(propertyType)
+				       ? MapList(propertyType, propertyValue, idUri)
+				       : MapSingleValue(propertyType, propertyValue, idUri);
 		}
 
-		public class ChildCollectionResource
+		private static object MapSingleValue(Type propertyType, object memberValue, string idUri)
 		{
-			public ChildCollectionResource()
-			{
-				Items = new ArrayList();
-			}
+			TypeMap memberMap = TypeMaps.For(propertyType);
 
-			public string Href { get; set; }
-			public ArrayList Items { get; set; }
+			return memberMap != null
+				       ? memberMap.MapInstance(memberValue, idUri)
+				       : memberValue;
+		}
 
-			public void Add(object item)
+		private static object MapList(Type propertyType, object memberValue, string idUri)
+		{
+			object result;
+			var enumerableType = propertyType.GetGenericArguments().First();
+			var enumerableMap = TypeMaps.For(enumerableType);
+			
+			if (enumerableMap != null)
 			{
-				Items.Add(item);
+				var list = new ArrayList();
+				foreach (var item in (IEnumerable)memberValue)
+				{
+					list.Add(enumerableMap.MapInstance(item, idUri));
+				}
+				result = list;
 			}
+			else
+			{
+				result = memberValue;
+			}
+			return result;
+		}
+
+		private static bool IsGenericListType(Type propertyType)
+		{
+			return propertyType.IsGenericType && (typeof(IEnumerable)).IsAssignableFrom(propertyType);
+		}
+
+		private string GetIdUri(object toMap, string parentIdUri)
+		{
+			return parentIdUri + "/" + UriSegment + "/" + idProperty.GetValue(toMap);
 		}
 	}
 }

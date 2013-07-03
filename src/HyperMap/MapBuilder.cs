@@ -25,35 +25,29 @@ namespace HyperMap
 		{
 		}
 
-		public MapBuilder<T> Id<TMember>(Expression<Func<T, TMember>> sourceMember)
+		public MapBuilder<T> Id<TMember>(Expression<Func<T, TMember>> property)
 		{
-			var property = ((MemberExpression)sourceMember.Body).Member as PropertyInfo;
-			typeMap.SetId(property);
+			var propertyInfo = ((MemberExpression)property.Body).Member as PropertyInfo;
+			typeMap.SetId(propertyInfo);
 			return this;
 		}
 
-		public MapBuilder<T> ResourceUriFor<TMember>(Expression<Func<T, TMember>> sourceMember)
+		public MapBuilder<T> WithResourceLink<TMember>(Expression<Func<T, TMember>> sourceMember, string linkRelation)
 		{
 			var property = ((MemberExpression)sourceMember.Body).Member as PropertyInfo;
-			typeMap.AddChildResource(property);
+			typeMap.AddLink(property, linkRelation);
 			return this;
 		}
 
-		public MapBuilder<TMember> ChildResource<TMember>(Expression<Func<T, TMember>> sourceMember)
+		public MapBuilder<TMember> WithChildResource<TMember>(Expression<Func<T, TMember>> property)
 		{
-			var referringProperty = ((MemberExpression)sourceMember.Body).Member as PropertyInfo;
+			var referringProperty = ((MemberExpression)property.Body).Member as PropertyInfo;
 			return new MapBuilder<TMember>(referringProperty);
 		}
 
-		public MapBuilder<TEnumerable> ChildResource<TEnumerable>(Expression<Func<T, IEnumerable<TEnumerable>>> sourceMember)
+		public MapBuilder<TEnumerable> WithChildResourceList<TEnumerable>(Expression<Func<T, IEnumerable<TEnumerable>>> listProperty)
 		{
-			var referringProperty = ((MemberExpression)sourceMember.Body).Member as PropertyInfo;
-			return new MapBuilder<TEnumerable>(referringProperty);
-		}
-
-		public MapBuilder<TEnumerable> ChildResource<TEnumerable>(Expression<Func<T, List<TEnumerable>>> sourceMember)
-		{
-			var referringProperty = ((MemberExpression)sourceMember.Body).Member as PropertyInfo;
+			var referringProperty = ((MemberExpression)listProperty.Body).Member as PropertyInfo;
 			return new MapBuilder<TEnumerable>(referringProperty);
 		}
 	}

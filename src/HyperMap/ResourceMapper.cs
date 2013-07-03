@@ -2,14 +2,14 @@ using System;
 
 namespace HyperMap
 {
-	public class HyperMap
+	public class ResourceMapper
 	{
-		public static MapBuilder<T> CreateResourceMap<T>(string uriSegment)
+		public static MapBuilder<T> CreateMap<T>(string uriSegment)
 		{
 			return new MapBuilder<T>(uriSegment);
 		}
 
-		public static MapBuilder<T> CreateResourceMap<T>()
+		public static MapBuilder<T> CreateMap<T>()
 		{
 			return new MapBuilder<T>();
 		}
