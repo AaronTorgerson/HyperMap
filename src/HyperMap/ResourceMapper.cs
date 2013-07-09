@@ -17,7 +17,7 @@ namespace HyperMap
 		public static dynamic Map(object toMap)
 		{
 			Type toMapType = toMap.GetType();
-			var map = TypeMaps.For(toMapType);
+			var map = TypeMappers.For(toMapType);
 			return map.MapInstance(toMap);
 		}
 	}

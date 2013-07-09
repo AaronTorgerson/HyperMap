@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -7,12 +6,11 @@ using System.Reflection;
 
 namespace HyperMap
 {
-	public class TypeMap
+	public class TypeMap : ITypeMapper
 	{
-		private readonly List<MemberInfo> propertiesToOmit;
+		private PropertyInfo idProperty;
 		private readonly PropertyInfo[] properties;
 		private readonly Dictionary<PropertyInfo, LinkTemplate> linkTemplates;
-		private PropertyInfo idProperty;
 
 		public Type Type { get; private set; }
 		public string UriSegment { get; private set; }
@@ -21,7 +19,6 @@ namespace HyperMap
 		{
 			Type = type;
 			UriSegment = uriSegment;
-			propertiesToOmit = new List<MemberInfo>();
 			properties = Type.GetProperties();
 			AssumeIdBasedOnName();
 			linkTemplates = new Dictionary<PropertyInfo, LinkTemplate>();
@@ -35,15 +32,14 @@ namespace HyperMap
 			});
 		}
 
-		public void SetId(PropertyInfo idProperty)
+		public void SetId(PropertyInfo idPropertyInfo)
 		{
-			this.idProperty = idProperty;
+			idProperty = idPropertyInfo;
 		}
 
 		public void AddLink(PropertyInfo member, string linkRelation)
 		{
 			linkTemplates.Add(member, new LinkTemplate(member.Name, linkRelation));
-			propertiesToOmit.Add(member);
 		}
 
 		public dynamic MapInstance(object toMap, string parentIdUri = "")
@@ -76,50 +72,22 @@ namespace HyperMap
 
 		private static object MapProperty(Type propertyType, object propertyValue, string idUri)
 		{
-			return IsGenericListType(propertyType)
-				       ? MapList(propertyType, propertyValue, idUri)
-				       : MapSingleValue(propertyType, propertyValue, idUri);
-		}
+			ITypeMapper memberMap = TypeMappers.For(propertyType);
 
-		private static object MapSingleValue(Type propertyType, object memberValue, string idUri)
-		{
-			TypeMap memberMap = TypeMaps.For(propertyType);
-
-			return memberMap != null
-				       ? memberMap.MapInstance(memberValue, idUri)
-				       : memberValue;
-		}
-
-		private static object MapList(Type propertyType, object memberValue, string idUri)
-		{
-			object result;
-			var enumerableType = propertyType.GetGenericArguments().First();
-			var enumerableMap = TypeMaps.For(enumerableType);
-			
-			if (enumerableMap != null)
-			{
-				var list = new ArrayList();
-				foreach (var item in (IEnumerable)memberValue)
-				{
-					list.Add(enumerableMap.MapInstance(item, idUri));
-				}
-				result = list;
-			}
-			else
-			{
-				result = memberValue;
-			}
-			return result;
-		}
-
-		private static bool IsGenericListType(Type propertyType)
-		{
-			return propertyType.IsGenericType && (typeof(IEnumerable)).IsAssignableFrom(propertyType);
+			return memberMap.MapInstance(propertyValue, idUri);
 		}
 
 		private string GetIdUri(object toMap, string parentIdUri)
 		{
 			return parentIdUri + "/" + UriSegment + "/" + idProperty.GetValue(toMap);
+		}
+	}
+
+	public class UnknownTypeMapper : ITypeMapper
+	{
+		public dynamic MapInstance(object toMap, string parentIdUri = "")
+		{
+			return toMap;
 		}
 	}
 }

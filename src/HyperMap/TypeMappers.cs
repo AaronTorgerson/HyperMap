@@ -1,9 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace HyperMap
 {
-	public class TypeMaps
+	public class TypeMappers
 	{
 		private static readonly Dictionary<Type, TypeMap> Maps
 			= new Dictionary<Type, TypeMap>();
@@ -18,9 +19,11 @@ namespace HyperMap
 			Maps.Clear();
 		}
 
-		public static TypeMap For(Type type)
+		public static ITypeMapper For(Type type)
 		{
-			return Maps.ContainsKey(type) ? Maps[type] : null;
+			if (Maps.ContainsKey(type)) return Maps[type];
+			else if (typeof (ICollection).IsAssignableFrom(type)) return new CollectionMapper();
+			else return new UnknownTypeMapper();
 		}
 	}
 }

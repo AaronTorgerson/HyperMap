@@ -12,7 +12,7 @@ namespace HyperMap
 		public MapBuilder(string uriSegment)
 		{
 			typeMap = new TypeMap(typeof(T), uriSegment);
-			TypeMaps.Register(typeMap);
+			TypeMappers.Register(typeMap);
 		}
 
 		public MapBuilder() 
@@ -39,13 +39,13 @@ namespace HyperMap
 			return this;
 		}
 
-		public MapBuilder<TMember> WithChildResource<TMember>(Expression<Func<T, TMember>> property)
+		public MapBuilder<TMember> WithResource<TMember>(Expression<Func<T, TMember>> property)
 		{
 			var referringProperty = ((MemberExpression)property.Body).Member as PropertyInfo;
 			return new MapBuilder<TMember>(referringProperty);
 		}
 
-		public MapBuilder<TEnumerable> WithChildResourceList<TEnumerable>(Expression<Func<T, IEnumerable<TEnumerable>>> listProperty)
+		public MapBuilder<TEnumerable> WithResourceList<TEnumerable>(Expression<Func<T, IEnumerable<TEnumerable>>> listProperty)
 		{
 			var referringProperty = ((MemberExpression)listProperty.Body).Member as PropertyInfo;
 			return new MapBuilder<TEnumerable>(referringProperty);
