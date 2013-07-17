@@ -22,8 +22,15 @@ namespace HyperMap
 		public static ITypeMapper For(Type type)
 		{
 			if (Maps.ContainsKey(type)) return Maps[type];
-			else if (typeof (ICollection).IsAssignableFrom(type)) return new CollectionMapper();
+			else if (IsListType(type)) return new CollectionMapper();
 			else return new UnknownTypeMapper();
+		}
+
+		private static bool IsListType(Type type)
+		{
+			return (typeof (IEnumerable).IsAssignableFrom(type)
+			        && type.IsGenericType)
+			       || typeof (ICollection).IsAssignableFrom(type);
 		}
 	}
 }

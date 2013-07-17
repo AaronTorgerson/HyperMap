@@ -6,7 +6,7 @@ namespace HyperMap
 	{
 		public dynamic MapInstance(object toMap, string parentIdUri = "")
 		{
-			var source = toMap as ICollection;
+			var source = toMap as IEnumerable;
 			var result = new ArrayList();
 			
 			foreach (var item in source)

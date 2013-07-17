@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace HyperMap.Test
@@ -104,7 +105,7 @@ namespace HyperMap.Test
 						Hoozit = new SampleTypes.Hoozit(),
 						Id = 555
 					}
-				}
+				}.Take(1)
 		};
 
 		[Test]

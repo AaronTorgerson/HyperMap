@@ -13,7 +13,7 @@ namespace HyperMap.Test
 				Features = new List<Feature>();
 			}
 
-			public List<Feature> Features { get; set; }
+			public IEnumerable<Feature> Features { get; set; }
 		}
 
 		public class Feature
