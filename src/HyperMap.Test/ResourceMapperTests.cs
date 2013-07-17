@@ -105,7 +105,7 @@ namespace HyperMap.Test
 						Hoozit = new SampleTypes.Hoozit(),
 						Id = 555
 					}
-				}.Take(1)
+				}.Take(1) // to make it an IEnumerable<> but not List<>
 		};
 
 		[Test]
@@ -181,8 +181,23 @@ namespace HyperMap.Test
 			Assert.That(mapped.Name, Is.EqualTo("Foo"));
 		}
 
+		public class NoIdProperty
+		{
+			public string Name { get; set; }
+		}
+
+		[Test]
+		public void TypeHasNoIdProperty()
+		{
+			ResourceMapper.CreateMap<NoIdProperty>();
+
+			Assert.Throws<UnknownIdPropertyException>(() =>
+			{
+				ResourceMapper.Map(new NoIdProperty {Name = "foo"});
+			});
+		}
+
 		// Sibling resource links (map hierarchies)
-		// Type has no Id property - what do?
 		// Property of unmapped type is mapped
 		// Map a dynamic?
 	}

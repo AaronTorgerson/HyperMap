@@ -45,6 +45,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeMap.cs" />
     <Compile Include="TypeMappers.cs" />
+    <Compile Include="UnknownIdPropertyException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HyperMap.nuspec" />

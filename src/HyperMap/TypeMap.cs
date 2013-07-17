@@ -44,6 +44,8 @@ namespace HyperMap
 
 		public dynamic MapInstance(object toMap, string parentIdUri = "")
 		{
+			if (idProperty == null) throw new UnknownIdPropertyException(Type);
+
 			IDictionary<string, object> result = new ExpandoObject();
 			var links = new Links();
 			string idUri = GetIdUri(toMap, parentIdUri);
