@@ -1,7 +1,7 @@
 HyperMap (obsolete)
 ========
 
-**This project is dead. A (hopefully better) attempt at fulfilling the goals of this project can be found at http://github.com/AaronTorgerson/Resourceful**
+**This project is dead. Another (hopefully better) attempt at fulfilling the goals of this project can be found at http://github.com/AaronTorgerson/Resourceful**
 
 Fluently map your .NET model classes to REST resource representations.
 
